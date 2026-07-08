@@ -1,17 +1,12 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-import { AlertCircle, ArrowRight, Loader2, ShieldCheck } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, Loader2, ShieldCheck } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 
 function GoogleMark() {
@@ -58,32 +53,58 @@ export function LoginCard() {
   }
 
   return (
-    <Card className="border-[#ded6c9] bg-white/90 p-2 shadow-2xl shadow-stone-900/10 backdrop-blur">
-      <CardHeader className="space-y-5 px-5 pt-5 sm:px-7 sm:pt-7">
-        <div className="flex items-center justify-between">
-          <div className="flex size-11 items-center justify-center rounded-2xl bg-[#171412] text-white shadow-lg shadow-stone-900/15">
-            <ShieldCheck className="size-5" aria-hidden="true" />
+    <div className="rounded-[2rem] border border-[#1f4d47]/10 bg-white/82 p-5 shadow-[0_30px_90px_-58px_rgba(24,63,58,0.75)] backdrop-blur sm:p-7">
+      <div className="space-y-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-sm font-medium text-[#66736f] transition-colors hover:text-[#183f3a]"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          Back to home
+        </Link>
+
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Image
+              src="/cvmatch-logo-navbar.png"
+              alt="CVMatch logo"
+              width={56}
+              height={56}
+              className="size-12 object-contain"
+              priority
+            />
+            <span
+              className="text-2xl font-semibold tracking-tight text-[#1f4d47]"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              CVMatch
+            </span>
           </div>
-          <span className="rounded-full border border-[#ded6c9] bg-[#f7f4ef] px-3 py-1 text-xs font-medium text-[#6d6255]">
+          <span className="rounded-full border border-[#1f4d47]/10 bg-[#e6f0ee] px-3 py-1 text-xs font-medium text-[#365a54]">
             Google OAuth
           </span>
         </div>
-        <div className="space-y-2">
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#9a7841]">
-            CV Match Desk
-          </p>
-          <CardTitle className="text-3xl font-semibold tracking-tight text-[#171412]">
-            Sign in to your review workspace
-          </CardTitle>
-          <CardDescription className="text-base leading-7 text-[#6d6255]">
-            Upload your CV and compare it with any job post before applying.
-          </CardDescription>
-        </div>
-      </CardHeader>
 
-      <CardContent className="space-y-5 px-5 pb-5 sm:px-7 sm:pb-7">
+        <div className="space-y-3">
+          <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#66736f]">
+            Private scan account
+          </p>
+          <h1
+            className="text-4xl leading-[0.96] tracking-tight text-[#183f3a] sm:text-5xl"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Welcome to CVMatch
+          </h1>
+          <p className="text-base leading-7 text-[#66736f]">
+            Continue with Google to scan your CV, review job-specific gaps, and
+            keep your results connected to your account.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-7 space-y-5">
         {errorMessage ? (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="rounded-2xl">
             <AlertCircle className="size-4" aria-hidden="true" />
             <AlertTitle>Google sign-in could not start</AlertTitle>
             <AlertDescription>{errorMessage}</AlertDescription>
@@ -95,7 +116,7 @@ export function LoginCard() {
           size="lg"
           disabled={isLoading}
           onClick={handleGoogleLogin}
-          className="h-12 w-full rounded-xl bg-[#171412] text-white shadow-lg shadow-stone-900/15 hover:bg-[#2a251f]"
+          className="h-13 w-full rounded-full bg-[#1f4d47] text-white shadow-[0_18px_40px_-24px_rgba(24,63,58,0.7)] hover:bg-[#183f3a]"
         >
           {isLoading ? (
             <>
@@ -111,11 +132,16 @@ export function LoginCard() {
           )}
         </Button>
 
-        <p className="text-center text-sm leading-6 text-[#6d6255]">
-          This is an ATS-style CV match analysis for CV readiness, not a hiring
-          decision.
-        </p>
-      </CardContent>
-    </Card>
+        <div className="rounded-2xl bg-[#e6f0ee]/72 p-4">
+          <p className="flex items-start gap-2 text-sm leading-6 text-[#365a54]">
+            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-[#1f4d47]" aria-hidden="true" />
+            <span>
+              Your scans stay private to your account. CVMatch gives ATS-style
+              feedback, not a hiring decision.
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
