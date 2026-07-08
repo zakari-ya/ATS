@@ -1,20 +1,12 @@
 import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
+import { getSupabaseAdminEnv } from "@/lib/env";
 
 export function createAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
+  const { url, secretKey } = getSupabaseAdminEnv();
 
-  if (!supabaseUrl) {
-    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
-  }
-
-  if (!supabaseSecretKey) {
-    throw new Error("Missing SUPABASE_SECRET_KEY");
-  }
-
-  return createClient(supabaseUrl, supabaseSecretKey, {
+  return createClient(url, secretKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,

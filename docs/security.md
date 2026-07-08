@@ -210,11 +210,24 @@ Recommended MVP limits:
 - Max CV extracted text: 100,000 characters.
 - Cooldown after repeated failed uploads.
 
+Current MVP limits:
+- 5 scans per user per UTC day.
+- 10 CV uploads per user per UTC day.
+- 5 AI analysis requests per user per UTC day.
+
+Usage counters are enforced server-side only. The current implementation uses
+trusted service-role server code to update `usage_counters`; replace this with a
+small atomic Postgres RPC before adding paid plans or parallel scan processing.
+
 ## Safe Error Codes
 
 Use consistent error codes:
 - UNAUTHORIZED
 - RATE_LIMITED
+- DAILY_SCAN_LIMIT_REACHED
+- DAILY_UPLOAD_LIMIT_REACHED
+- DAILY_AI_LIMIT_REACHED
+- USAGE_COUNTER_FAILED
 - INVALID_FILE_TYPE
 - FILE_TOO_LARGE
 - PDF_TEXT_EXTRACTION_FAILED
