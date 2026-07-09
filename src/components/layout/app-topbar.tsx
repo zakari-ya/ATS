@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus, Search } from "lucide-react";
+import { ArrowUpRight, Plus, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/components/layout/user-menu";
@@ -54,6 +55,25 @@ export function AppTopbar({ userEmail }: AppTopbarProps) {
     <header className="sticky top-0 z-30 border-b border-[rgba(31,77,71,0.12)] bg-[#f8f7f3]/88 px-4 py-3 backdrop-blur-xl lg:px-5">
       <div className="flex min-h-14 items-center justify-between gap-4">
         <div className="min-w-0">
+          <Link
+            href="/"
+            className={cn(
+              "mb-2 inline-flex h-9 items-center gap-2 rounded-full border border-[rgba(31,77,71,0.12)] bg-white/86 px-3 text-sm font-medium text-[#365a54] shadow-sm shadow-[#183f3a]/5 transition-colors hover:bg-white hover:text-[#183f3a] sm:hidden",
+              appFocusRing
+            )}
+            aria-label="Return to CVMatch landing page"
+          >
+            <Image
+              src="/logo_cvmatch2-bgNo.png"
+              alt=""
+              width={32}
+              height={32}
+              className="size-5 object-contain"
+              aria-hidden="true"
+            />
+            <span>CVMatch home</span>
+            <ArrowUpRight className="size-3.5" aria-hidden="true" />
+          </Link>
           <p className="truncate text-lg font-semibold tracking-tight text-[#183f3a]">
             {copy.title}
           </p>

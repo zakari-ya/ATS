@@ -53,8 +53,8 @@ export function LoginCard() {
   }
 
   return (
-    <div className="rounded-[2rem] border border-[#1f4d47]/10 bg-white/82 p-5 shadow-[0_30px_90px_-58px_rgba(24,63,58,0.75)] backdrop-blur sm:p-7">
-      <div className="space-y-6">
+    <div className="rounded-[1.7rem] border border-[#1f4d47]/10 bg-white/82 p-4 shadow-[0_30px_90px_-58px_rgba(24,63,58,0.75)] backdrop-blur sm:rounded-[2rem] sm:p-7">
+      <div className="space-y-5 sm:space-y-6">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm font-medium text-[#66736f] transition-colors hover:text-[#183f3a]"
@@ -63,46 +63,46 @@ export function LoginCard() {
           Back to home
         </Link>
 
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2">
             <Image
               src="/cvmatch-logo-navbar.png"
               alt="CVMatch logo"
               width={56}
               height={56}
-              className="size-12 object-contain"
+              className="size-10 object-contain sm:size-12"
               priority
             />
             <span
-              className="text-2xl font-semibold tracking-tight text-[#1f4d47]"
+              className="truncate text-[1.65rem] font-semibold tracking-tight text-[#1f4d47] sm:text-2xl"
               style={{ fontFamily: "var(--font-display)" }}
             >
               CVMatch
             </span>
           </div>
-          <span className="rounded-full border border-[#1f4d47]/10 bg-[#e6f0ee] px-3 py-1 text-xs font-medium text-[#365a54]">
+          <span className="rounded-full border border-[#1f4d47]/10 bg-[#e6f0ee] px-3 py-1 text-[11px] font-medium text-[#365a54] sm:text-xs">
             Google OAuth
           </span>
         </div>
 
         <div className="space-y-3">
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#66736f]">
+          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#66736f] sm:text-sm sm:tracking-[0.2em]">
             Private scan account
           </p>
           <h1
-            className="text-4xl leading-[0.96] tracking-tight text-[#183f3a] sm:text-5xl"
+            className="text-[2.2rem] leading-[0.96] tracking-tight text-[#183f3a] sm:text-[2.85rem]"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Welcome to CVMatch
           </h1>
-          <p className="text-base leading-7 text-[#66736f]">
+          <p className="text-sm leading-6 text-[#66736f] sm:text-base sm:leading-7">
             Continue with Google to scan your CV, review job-specific gaps, and
             keep your results connected to your account.
           </p>
         </div>
       </div>
 
-      <div className="mt-7 space-y-5">
+      <div className="mt-6 space-y-4 sm:mt-7 sm:space-y-5">
         {errorMessage ? (
           <Alert variant="destructive" className="rounded-2xl">
             <AlertCircle className="size-4" aria-hidden="true" />
@@ -116,7 +116,7 @@ export function LoginCard() {
           size="lg"
           disabled={isLoading}
           onClick={handleGoogleLogin}
-          className="h-13 w-full rounded-full bg-[#1f4d47] text-white shadow-[0_18px_40px_-24px_rgba(24,63,58,0.7)] hover:bg-[#183f3a]"
+          className="h-12 w-full rounded-full bg-[#1f4d47] text-sm text-white shadow-[0_18px_40px_-24px_rgba(24,63,58,0.7)] hover:bg-[#183f3a] sm:h-13"
         >
           {isLoading ? (
             <>
@@ -132,7 +132,7 @@ export function LoginCard() {
           )}
         </Button>
 
-        <div className="rounded-2xl bg-[#e6f0ee]/72 p-4">
+        <div className="rounded-[1.3rem] bg-[#e6f0ee]/72 p-3.5 sm:rounded-2xl sm:p-4">
           <p className="flex items-start gap-2 text-sm leading-6 text-[#365a54]">
             <ShieldCheck className="mt-0.5 size-4 shrink-0 text-[#1f4d47]" aria-hidden="true" />
             <span>
