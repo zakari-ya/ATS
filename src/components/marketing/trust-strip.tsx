@@ -1,56 +1,63 @@
 "use client";
 
-import { motion } from "motion/react";
+import { ArrowDown } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 
-import {
-  SectionShell,
-  marketingFadeUp,
-  marketingPillClassName,
-} from "./section-shell";
+import { SectionShell, marketingFadeUp, marketingSerifStyle } from "./section-shell";
+import { StoryNode } from "./story-line";
 
-const items = [
+const promises = [
   "Private uploads",
+  "Validated analysis",
   "Backend scoring",
-  "Validated AI output",
-  "Daily limits",
   "Delete scans anytime",
 ];
 
 export function TrustStrip() {
-  return (
-    <SectionShell className="pb-12 pt-10 lg:pb-16 lg:pt-12">
-      <motion.div {...marketingFadeUp}>
-        <div className="relative overflow-hidden rounded-[32px] bg-[linear-gradient(180deg,rgba(255,255,255,0.56),rgba(255,255,255,0.18))] px-4 py-4 shadow-[0_26px_60px_-46px_rgba(31,77,71,0.22)] backdrop-blur-xl sm:px-6">
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-16 top-0 h-16 rounded-full bg-[#dcebea]/50 blur-3xl"
-          />
-          <div className="relative flex flex-col items-center gap-4 lg:flex-row lg:justify-between">
-            <p className="text-center text-[11px] uppercase tracking-[0.28em] text-[#66736f] lg:text-left">
-              Built for structured CV review
-            </p>
+  const shouldReduceMotion = useReducedMotion();
 
-            <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 lg:justify-end">
-              {items.map((label, index) => (
-                <motion.div
-                  key={label}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: index * 0.05,
-                    ease: "easeOut",
-                  }}
-                  className={marketingPillClassName}
-                >
-                  {label}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </SectionShell>
+  return (
+    <section className="relative -mt-px overflow-hidden bg-[linear-gradient(180deg,#dcebea_0%,#f3f5f1_42%,#fbfaf7_100%)] pt-16 sm:pt-20 lg:pt-24">
+      <SectionShell className="relative pb-16 lg:pb-24" innerClassName="relative">
+        <StoryNode />
+        <motion.div {...marketingFadeUp} className="mx-auto max-w-4xl text-center">
+          <p className="text-sm font-medium text-[#58716b]">Before you apply</p>
+          <h2
+            className="mt-4 text-balance text-[2.6rem] leading-[0.98] tracking-[-0.03em] text-[#183f3a] sm:text-[3.8rem] lg:text-[4.6rem]"
+            style={marketingSerifStyle}
+          >
+            Know where your CV matches. See where it falls short.
+          </h2>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-[#58716b] sm:text-lg">
+            CVMatch compares your CV with one specific job description and turns
+            the result into structured, practical evidence.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.18 }}
+          className="mx-auto mt-12 flex max-w-4xl flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-[#47655f]"
+        >
+          {promises.map((item, index) => (
+            <span key={item} className="inline-flex items-center gap-3">
+              {index > 0 ? <span className="hidden size-1 rounded-full bg-[#a9c7c1] sm:block" aria-hidden="true" /> : null}
+              {item}
+            </span>
+          ))}
+        </motion.div>
+
+        <motion.div
+          className="mx-auto mt-10 flex size-10 items-center justify-center rounded-full bg-white/70 text-[#1f4d47]"
+          animate={shouldReduceMotion ? undefined : { y: [0, 5, 0] }}
+          transition={{ duration: 1.8, repeat: 1, ease: "easeInOut" }}
+          aria-hidden="true"
+        >
+          <ArrowDown className="size-4" />
+        </motion.div>
+      </SectionShell>
+    </section>
   );
 }

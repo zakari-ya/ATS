@@ -7,17 +7,17 @@ export const marketingSerifStyle = {
 } satisfies React.CSSProperties;
 
 export const marketingFadeUp = {
-  initial: { opacity: 0, y: 18 },
+  initial: { opacity: 0, y: 16 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, amount: 0.2 },
-  transition: { duration: 0.6, ease: "easeOut" },
+  transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
 } as const;
 
 export const marketingPanelClassName =
-  "rounded-[30px] border border-[rgba(31,77,71,0.08)] bg-white/74 shadow-[0_28px_80px_-54px_rgba(31,77,71,0.24)] backdrop-blur-xl";
+  "rounded-2xl bg-white/82 shadow-[0_8px_24px_-20px_rgba(31,77,71,0.24)] backdrop-blur-xl";
 
 export const marketingSoftPanelClassName =
-  "rounded-[36px] border border-[rgba(31,77,71,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.72),rgba(230,240,238,0.78))] shadow-[0_32px_90px_-58px_rgba(31,77,71,0.28)] backdrop-blur-xl";
+  "rounded-2xl bg-[linear-gradient(180deg,rgba(255,255,255,0.74),rgba(230,240,238,0.82))] shadow-[0_8px_24px_-20px_rgba(31,77,71,0.26)] backdrop-blur-xl";
 
 export const marketingEyebrowClassName =
   "text-xs uppercase tracking-[0.28em] text-[#58716b]";
@@ -29,7 +29,7 @@ export const marketingDividerClassName =
   "border-[rgba(31,77,71,0.09)]";
 
 export const marketingPillClassName =
-  "inline-flex items-center rounded-full bg-white/70 px-3 py-1 text-xs tracking-[0.12em] text-[#47655f] shadow-[0_14px_26px_-22px_rgba(31,77,71,0.28)] backdrop-blur-lg";
+  "inline-flex items-center rounded-full bg-white/76 px-3 py-1 text-xs text-[#47655f] backdrop-blur-lg";
 
 type SectionShellProps = {
   as?: "section" | "div" | "header" | "footer";

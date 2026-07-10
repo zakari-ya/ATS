@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { History, LayoutDashboard, ScanLine, Settings } from "lucide-react";
 
 import { appFocusRing } from "@/lib/design/tokens";
@@ -36,6 +37,7 @@ const SCROLL_DELTA_THRESHOLD = 8;
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const shouldReduceMotion = useReducedMotion();
   const [isHidden, setIsHidden] = useState(false);
   const lastScrollTopRef = useRef(0);
   const tickingRef = useRef(false);
@@ -121,15 +123,23 @@ export function MobileBottomNav() {
               aria-current={isActive ? "page" : undefined}
               tabIndex={isHidden ? -1 : undefined}
               className={cn(
-                "flex h-14 flex-col items-center justify-center gap-1 rounded-xl text-[0.68rem] font-medium transition-colors",
+                "relative flex h-14 flex-col items-center justify-center gap-1 rounded-xl text-[0.68rem] font-medium transition-colors",
                 appFocusRing,
                 isActive
-                  ? "bg-[#183f3a] text-white"
+                  ? "text-white"
                   : "text-[#66736f] hover:bg-[#eef4f2] hover:text-[#183f3a]"
               )}
             >
-              <Icon className="size-4" aria-hidden="true" />
-              <span>{item.label}</span>
+              {isActive ? (
+                <motion.span
+                  layoutId="mobile-active-route"
+                  className="absolute inset-0 rounded-xl bg-[#183f3a]"
+                  transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  aria-hidden="true"
+                />
+              ) : null}
+              <Icon className="relative z-10 size-4" aria-hidden="true" />
+              <span className="relative z-10">{item.label}</span>
             </Link>
           );
         })}

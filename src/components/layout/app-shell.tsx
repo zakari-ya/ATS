@@ -3,17 +3,19 @@ import type { ReactNode } from "react";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { AppTopbar } from "@/components/layout/app-topbar";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
+import type { TodayUsageSummary } from "@/types/usage";
 
 type AppShellProps = {
   children: ReactNode;
   userEmail?: string | null;
+  usage?: TodayUsageSummary | null;
 };
 
-export function AppShell({ children, userEmail }: AppShellProps) {
+export function AppShell({ children, userEmail, usage }: AppShellProps) {
   return (
     <div className="h-dvh overflow-hidden bg-[#f8f7f3] text-[#183f3a]">
       <div className="flex h-full min-h-0 w-full">
-        <AppSidebar userEmail={userEmail} />
+        <AppSidebar userEmail={userEmail} usage={usage} />
         <div className="flex min-w-0 flex-1 flex-col">
           <AppTopbar userEmail={userEmail} />
           <main

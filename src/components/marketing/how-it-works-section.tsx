@@ -1,111 +1,93 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 
-import {
-  SectionShell,
-  marketingBodyClassName,
-  marketingFadeUp,
-  marketingPillClassName,
-  marketingSerifStyle,
-} from "./section-shell";
+import { SectionShell, marketingFadeUp, marketingSerifStyle } from "./section-shell";
+import { StoryNode } from "./story-line";
 
-const steps = [
+const roles = [
   {
-    number: "01",
-    title: "Upload a text-based PDF",
-    description: "Use a clean CV PDF where the text can be selected.",
-    note: "PDF only",
+    title: "Frontend Developer",
+    requirements: [
+      ["React", "Matched"],
+      ["TypeScript", "Matched"],
+      ["REST APIs", "Evidence found"],
+    ],
   },
   {
-    number: "02",
-    title: "Paste the job description",
-    description: "Add the role you want to compare against.",
-    note: "Structured input",
+    title: "Full-stack Developer",
+    requirements: [
+      ["React", "Matched"],
+      ["Node.js", "Missing"],
+      ["PostgreSQL", "Missing"],
+    ],
   },
   {
-    number: "03",
-    title: "Review matched and missing requirements",
-    description:
-      "See what already aligns, what is missing, and what needs stronger evidence.",
-    note: "Evidence first",
-  },
-  {
-    number: "04",
-    title: "Improve your CV with real evidence",
-    description:
-      "Update project and experience details with truthful proof, not stuffed keywords.",
-    note: "Practical next step",
+    title: "Backend Developer",
+    requirements: [
+      ["REST APIs", "Evidence found"],
+      ["PostgreSQL", "Missing"],
+      ["TypeScript", "Matched"],
+    ],
   },
 ];
 
 export function HowItWorksSection() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <SectionShell id="how-it-works" className="pb-16 pt-10 lg:pb-20 lg:pt-14">
-      <motion.div
-        className="grid gap-12 xl:grid-cols-[0.42fr_0.58fr] xl:items-start"
-        {...marketingFadeUp}
-      >
-        <div className="space-y-6 xl:sticky xl:top-12">
+    <SectionShell id="how-it-works" className="relative bg-[#fbfaf7] py-20 lg:py-28" innerClassName="relative">
+      <StoryNode />
+      <div className="grid gap-12 lg:grid-cols-[0.78fr_1.22fr] lg:items-center">
+        <motion.div {...marketingFadeUp} className="max-w-xl">
+          <p className="text-sm font-medium text-[#58716b]">The job changes the question</p>
           <h2
-            className="max-w-xl text-balance text-[2.55rem] leading-[1.02] tracking-tight text-[#183f3a] sm:text-[3.4rem]"
+            className="mt-4 text-balance text-[2.65rem] leading-[1] tracking-[-0.03em] text-[#183f3a] sm:text-[3.8rem]"
             style={marketingSerifStyle}
           >
-            How CVMatch works
+            One CV. Different jobs. Different gaps.
           </h2>
-          <p className={`${marketingBodyClassName} max-w-lg`}>
-            Upload your CV, paste the job post, and review a structured match
-            analysis in a few minutes.
+          <p className="mt-6 text-base leading-8 text-[#66736f] sm:text-lg">
+            A CV may fit one role and miss the core requirements of another.
+            CVMatch reviews each application against the job description you
+            provide.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="relative overflow-hidden rounded-[40px] bg-[linear-gradient(180deg,rgba(230,240,238,0.62),rgba(255,255,255,0.34))] px-6 py-8 shadow-[0_34px_90px_-60px_rgba(31,77,71,0.24)] sm:px-8 lg:px-10">
-          <div
-            aria-hidden="true"
-            className="absolute -left-10 top-10 h-64 w-32 rounded-full bg-[#dcebea]/78 blur-3xl"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute bottom-12 left-12 top-12 w-px bg-[linear-gradient(180deg,rgba(31,77,71,0.08),rgba(31,77,71,0.22),rgba(31,77,71,0.08))]"
-          />
+        <div className="relative min-h-[34rem] overflow-hidden rounded-2xl bg-[#e6f0ee] p-5 sm:p-8 lg:p-10">
+          <div className="absolute left-1/2 top-14 h-[72%] w-px -translate-x-1/2 bg-[linear-gradient(180deg,transparent,rgba(31,77,71,0.22),transparent)]" aria-hidden="true" />
+          <div className="relative mx-auto flex h-28 w-36 flex-col justify-center rounded-xl bg-[#183f3a] px-5 text-white shadow-[0_8px_20px_-14px_rgba(31,77,71,0.45)]">
+            <span className="text-xs text-white/58">Source</span>
+            <span className="mt-1 font-medium">One CV</span>
+            <span className="mt-2 h-1 w-16 rounded-full bg-[#a9c7c1]" />
+          </div>
 
-          <div className="relative space-y-10">
-            {steps.map((step, index) => (
+          <p className="relative mt-8 text-center text-xs font-medium text-[#58716b]">Example analysis</p>
+          <div className="relative mt-4 grid gap-3 lg:grid-cols-3">
+            {roles.map((role, index) => (
               <motion.article
-                key={step.number}
-                initial={{ opacity: 0, y: 18 }}
+                key={role.title}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{
-                  duration: 0.55,
-                  delay: index * 0.06,
-                  ease: "easeOut",
-                }}
-                className="grid gap-3 pl-14 sm:grid-cols-[auto_1fr] sm:gap-6 sm:pl-20"
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.5, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
+                className="relative rounded-xl bg-white/78 p-4 backdrop-blur-sm"
               >
-                <div className="relative">
-                  <span className="absolute -left-[3.55rem] top-1 flex size-9 items-center justify-center rounded-full bg-white/82 text-[11px] tracking-[0.18em] text-[#1f4d47] shadow-[0_14px_26px_-20px_rgba(31,77,71,0.28)] backdrop-blur-xl sm:-left-[4.65rem]">
-                    {step.number}
-                  </span>
-                  <span className={marketingPillClassName}>{step.note}</span>
-                </div>
-
-                <div className="max-w-xl">
-                  <h3
-                    className="text-[1.55rem] leading-tight tracking-tight text-[#1f4d47] sm:text-[1.85rem]"
-                    style={marketingSerifStyle}
-                  >
-                    {step.title}
-                  </h3>
-                  <p className="mt-3 max-w-lg text-sm leading-7 text-[#66736f] sm:text-[15px]">
-                    {step.description}
-                  </p>
-                </div>
+                <span className="absolute -top-5 left-1/2 h-5 w-px -translate-x-1/2 bg-[#a9c7c1]" aria-hidden="true" />
+                <h3 className="text-sm font-semibold text-[#183f3a]">{role.title}</h3>
+                <ul className="mt-4 space-y-3">
+                  {role.requirements.map(([name, status]) => (
+                    <li key={name} className="flex items-center justify-between gap-2 text-xs">
+                      <span className="text-[#365a54]">{name}</span>
+                      <span className={status === "Missing" ? "text-[#9a5b43]" : "text-[#276948]"}>{status}</span>
+                    </li>
+                  ))}
+                </ul>
               </motion.article>
             ))}
           </div>
         </div>
-      </motion.div>
+      </div>
     </SectionShell>
   );
 }

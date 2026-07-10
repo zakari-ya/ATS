@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/layout/app-shell";
+import { getTodayUsageForCurrentUser } from "@/features/usage/get-usage";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AppLayout({
@@ -19,5 +20,11 @@ export default async function AppLayout({
     redirect("/login");
   }
 
-  return <AppShell userEmail={user.email}>{children}</AppShell>;
+  const todayUsage = await getTodayUsageForCurrentUser();
+
+  return (
+    <AppShell userEmail={user.email} usage={todayUsage}>
+      {children}
+    </AppShell>
+  );
 }

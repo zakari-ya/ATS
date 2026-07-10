@@ -58,7 +58,7 @@ export function DevRlsTestCard() {
           onClick={handleCreateTestScan}
           disabled={isPending}
           className="h-11 w-full rounded-xl bg-white text-[#183f3a] hover:bg-[#eef4f2]"
-        >
+         >
           {isPending ? (
             <>
               <Loader2 className="size-4 animate-spin" aria-hidden="true" />

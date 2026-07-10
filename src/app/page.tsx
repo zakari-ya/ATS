@@ -5,9 +5,14 @@ import { FeaturesSection } from "@/components/marketing/features-section";
 import { FinalCTASection } from "@/components/marketing/final-cta-section";
 import { HeroSection } from "@/components/marketing/hero-section";
 import { HowItWorksSection } from "@/components/marketing/how-it-works-section";
+import { ImprovementJourneySection } from "@/components/marketing/improvement-journey-section";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
+import { MatchingJourneySection } from "@/components/marketing/matching-journey-section";
 import { PrivacySection } from "@/components/marketing/privacy-section";
+import { ProductBoundariesSection } from "@/components/marketing/product-boundaries-section";
+import { ScoreEvidenceSection } from "@/components/marketing/score-evidence-section";
+import { StoryLine } from "@/components/marketing/story-line";
 import { TrustStrip } from "@/components/marketing/trust-strip";
 import { createClient } from "@/lib/supabase/server";
 
@@ -35,12 +40,19 @@ export default async function HomePage() {
         <MarketingHeader userEmail={userEmail} userName={userName} />
         <HeroSection />
       </section>
-      <TrustStrip />
-      <HowItWorksSection />
-      <FeaturesSection />
-      <PrivacySection />
-      <FAQSection />
-      <FinalCTASection />
+      <div className="relative isolate overflow-clip">
+        <StoryLine />
+        <TrustStrip />
+        <HowItWorksSection />
+        <MatchingJourneySection />
+        <FeaturesSection />
+        <ScoreEvidenceSection />
+        <ImprovementJourneySection />
+        <PrivacySection />
+        <ProductBoundariesSection />
+        <FAQSection />
+        <FinalCTASection isAuthenticated={Boolean(userEmail)} />
+      </div>
       <MarketingFooter userEmail={userEmail} userName={userName} />
     </main>
   );

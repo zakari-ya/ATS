@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AlertCircle, History, Plus } from "lucide-react";
+import { AlertCircle, Plus } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { HISTORY_SCAN_LIMIT } from "@/features/scan/constants";
 import { ScanHistoryList } from "@/features/scan/components/scan-history-list";
@@ -46,30 +45,15 @@ export default async function HistoryPage() {
   const scans = (scanRows ?? []).map(normalizeScanHistoryRow);
 
   return (
-    <div className="flex min-h-full flex-col gap-4 lg:h-full lg:min-h-0">
-      <section className="rounded-2xl border border-[rgba(31,77,71,0.12)] bg-white p-4 shadow-sm shadow-[#183f3a]/5">
+    <div className="app-section-enter flex min-h-full flex-col gap-4 lg:min-h-0">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="min-w-0 space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge className="bg-[#183f3a] text-white">
-                <History className="size-3.5" aria-hidden="true" />
-                {scans.length} visible
-              </Badge>
-              <Badge
-                variant="outline"
-                className="border-[rgba(31,77,71,0.12)] bg-[#eef4f2] text-[#183f3a]"
-              >
-                Latest {HISTORY_SCAN_LIMIT}
-              </Badge>
-            </div>
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-[#183f3a] md:text-3xl">
                 Scan history
               </h1>
-              <p className="mt-1 text-sm leading-6 text-[#66736f]">
-                Review previous CV match analyses without loading private CV
-                text or detailed AI output.
-              </p>
+              <p className="mt-1 text-sm leading-6 text-[#66736f]">Search, compare, and revisit the latest {HISTORY_SCAN_LIMIT} lightweight scan summaries.</p>
             </div>
           </div>
 
@@ -83,7 +67,7 @@ export default async function HistoryPage() {
             </Link>
           </Button>
         </div>
-      </section>
+      </header>
 
       {scansError ? (
         <Alert className="border-[#f0c8c8] bg-[#fff7f7] text-[#8a2d2d]">
@@ -94,7 +78,7 @@ export default async function HistoryPage() {
           </AlertDescription>
         </Alert>
       ) : (
-        <div className="rounded-2xl border border-[rgba(31,77,71,0.12)] bg-white p-3 shadow-sm shadow-[#183f3a]/5 lg:min-h-0 lg:flex-1 lg:overflow-auto">
+        <div className="lg:min-h-0 lg:flex-1">
           <ScanHistoryList scans={scans} />
         </div>
       )}

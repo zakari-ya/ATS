@@ -14,12 +14,44 @@ export type DashboardRecentScan = {
 export type DashboardStats = {
   totalScans: number;
   completedScans: number;
+  completedThisMonth: number;
   inProgressScans: number;
   failedScans: number;
+  averageScore: number | null;
   bestScore: number | null;
-  bestScoreLabel: ScanLabel | null;
   latestScore: number | null;
-  latestScoreLabel: ScanLabel | null;
+  scoreSampleSize: number;
+};
+
+export type DashboardScorePoint = {
+  id: string;
+  jobTitle: string;
+  score: number;
+  finalLabel: ScanLabel | null;
+  date: string;
+};
+
+export type DashboardLabelDistribution = {
+  label: ScanLabel;
+  count: number;
+  percentage: number;
+};
+
+export type DashboardMissingSkill = {
+  name: string;
+  count: number;
+  percentage: number;
+};
+
+export type DashboardLatestInsight = {
+  scanId: string;
+  jobTitle: string;
+  completedAt: string;
+  finalScore: number;
+  finalLabel: ScanLabel | null;
+  matchedRequirements: string[];
+  missingRequiredSkills: string[];
+  recommendation: string | null;
 };
 
 export type DashboardData = {
@@ -28,4 +60,8 @@ export type DashboardData = {
   usage: TodayUsageSummary;
   stats: DashboardStats;
   recentScans: DashboardRecentScan[];
+  scoreTrend: DashboardScorePoint[];
+  labelDistribution: DashboardLabelDistribution[];
+  missingSkills: DashboardMissingSkill[];
+  latestInsight: DashboardLatestInsight | null;
 };

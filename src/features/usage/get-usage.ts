@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import {
   getRemainingUsage,
   isUsageLimitReached,
@@ -18,7 +20,7 @@ type UsageCounterRow = {
   ai_requests_used: number | null;
 };
 
-export async function getTodayUsageForCurrentUser(): Promise<TodayUsageSummary | null> {
+export const getTodayUsageForCurrentUser = cache(async function getTodayUsageForCurrentUser(): Promise<TodayUsageSummary | null> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -59,4 +61,4 @@ export async function getTodayUsageForCurrentUser(): Promise<TodayUsageSummary |
     isUploadLimitReached: isUsageLimitReached(uploadsUsed, uploadsLimit),
     isAiLimitReached: isUsageLimitReached(aiRequestsUsed, aiRequestsLimit),
   };
-}
+});

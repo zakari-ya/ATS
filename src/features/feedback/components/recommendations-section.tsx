@@ -1,110 +1,50 @@
 import { CheckCircle2, Lightbulb, Wrench } from "lucide-react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
-type RecommendationsSectionProps = {
-  strongPoints: string[];
-  weakPoints: string[];
-  recommendations: string[];
-};
-
 export function RecommendationsSection({
   strongPoints,
   weakPoints,
   recommendations,
-}: RecommendationsSectionProps) {
+}: {
+  strongPoints: string[];
+  weakPoints: string[];
+  recommendations: string[];
+}) {
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
-      <FeedbackListCard
-        title="Strong points"
-        description="Evidence already visible in the CV."
-        emptyMessage="No strong points were returned for this analysis."
-        items={strongPoints}
-        icon={CheckCircle2}
-        tone="green"
-      />
-      <FeedbackListCard
-        title="Weak points"
-        description="Areas where the evidence is thin or unclear."
-        emptyMessage="No weak points were returned for this analysis."
-        items={weakPoints}
-        icon={Wrench}
-        tone="amber"
-      />
-      <FeedbackListCard
-        title="Recommended improvements"
-        description="Practical CV updates to consider."
-        emptyMessage="No recommendations were returned for this analysis."
-        items={recommendations}
-        icon={Lightbulb}
-        tone="blue"
-      />
-    </div>
+    <section className="overflow-hidden rounded-xl bg-white">
+      <div className="grid lg:grid-cols-[0.85fr_1.15fr]">
+        <div className="bg-[#eef4f2] p-5">
+          <p className="text-sm font-medium text-[#66736f]">Evidence review</p>
+          <h2 className="mt-1 text-xl font-semibold text-[#183f3a]">What helps and what needs clarity</h2>
+          <FeedbackList title="Strong points" items={strongPoints} empty="No strong points were stored." icon={CheckCircle2} tone="positive" />
+          <FeedbackList title="Weak points" items={weakPoints} empty="No weak points were stored." icon={Wrench} tone="warning" />
+        </div>
+        <div className="p-5">
+          <div className="flex items-center gap-3">
+            <span className="flex size-9 items-center justify-center rounded-lg bg-[#183f3a] text-white"><Lightbulb className="size-4" aria-hidden="true" /></span>
+            <div><p className="text-sm font-medium text-[#66736f]">Improvement plan</p><h2 className="text-xl font-semibold text-[#183f3a]">Recommended next actions</h2></div>
+          </div>
+          {recommendations.length ? (
+            <ol className="mt-5 space-y-0">
+              {recommendations.map((item, index) => (
+                <li key={`${item}-${index}`} className="grid grid-cols-[2rem_1fr] gap-3 border-b border-[#e1e9e7] py-4 first:pt-0 last:border-b-0 last:pb-0">
+                  <span className="flex size-8 items-center justify-center rounded-full bg-[#dcebea] text-xs font-semibold text-[#183f3a]">{index + 1}</span>
+                  <p className="pt-1 text-sm leading-6 text-[#365a54]">{item}</p>
+                </li>
+              ))}
+            </ol>
+          ) : <p className="mt-5 text-sm leading-6 text-[#66736f]">No recommendations were stored for this analysis.</p>}
+          <p className="mt-5 text-xs leading-5 text-[#66736f]">Only add skills or experience that are true. Clearer evidence is more useful than keyword stuffing.</p>
+        </div>
+      </div>
+    </section>
   );
 }
 
-type FeedbackListCardProps = {
-  title: string;
-  description: string;
-  emptyMessage: string;
-  items: string[];
-  icon: typeof CheckCircle2;
-  tone: "green" | "amber" | "blue";
-};
-
-const toneClassName = {
-  green: "bg-[#effaf4] text-[#17623a]",
-  amber: "bg-[#fff7f0] text-[#9a3412]",
-  blue: "bg-[#eef7f8] text-[#245f6b]",
-} as const;
-
-function FeedbackListCard({
-  title,
-  description,
-  emptyMessage,
-  items,
-  icon: Icon,
-  tone,
-}: FeedbackListCardProps) {
+function FeedbackList({ title, items, empty, icon: Icon, tone }: { title: string; items: string[]; empty: string; icon: typeof CheckCircle2; tone: "positive" | "warning" }) {
   return (
-    <Card className="border-[rgba(31,77,71,0.12)] bg-white shadow-sm shadow-[#183f3a]/5">
-      <CardHeader className="gap-2 p-4">
-        <div
-          className={`mb-2 flex size-11 items-center justify-center rounded-2xl ${toneClassName[tone]}`}
-        >
-          <Icon className="size-5" aria-hidden="true" />
-        </div>
-        <CardTitle className="text-lg font-semibold tracking-tight text-[#183f3a]">
-          {title}
-        </CardTitle>
-        <CardDescription className="text-sm leading-6 text-[#66736f]">
-          {description}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-4 pt-0">
-        {items.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-[rgba(31,77,71,0.18)] bg-[#f8f7f3] p-4 text-sm leading-6 text-[#66736f]">
-            {emptyMessage}
-          </p>
-        ) : (
-          <ul className="space-y-3">
-            {items.map((item, index) => (
-              <li
-                key={`${item}-${index}`}
-                className="rounded-2xl border border-[rgba(31,77,71,0.12)] bg-[#f8f7f3] p-4 text-sm leading-6 text-[#183f3a]"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
+    <div className="mt-5">
+      <h3 className="flex items-center gap-2 text-sm font-semibold text-[#183f3a]"><Icon className={`size-4 ${tone === "positive" ? "text-[#276948]" : "text-[#9a6a27]"}`} aria-hidden="true" />{title}</h3>
+      {items.length ? <ul className="mt-3 space-y-2">{items.map((item, index) => <li key={`${item}-${index}`} className="text-sm leading-6 text-[#55706b]">{item}</li>)}</ul> : <p className="mt-2 text-sm text-[#66736f]">{empty}</p>}
+    </div>
   );
 }

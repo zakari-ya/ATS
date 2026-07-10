@@ -1,20 +1,12 @@
-import { ClipboardCheck, FileText, Lightbulb, Target } from "lucide-react";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { getAnalysisSummary } from "@/features/feedback/feedback-copy";
 import type { FeedbackResultDetails } from "@/features/feedback/types";
 
-type AnalysisSummaryCardProps = {
-  result: FeedbackResultDetails;
-};
-
-export function AnalysisSummaryCard({ result }: AnalysisSummaryCardProps) {
+export function AnalysisSummaryCard({ result }: { result: FeedbackResultDetails }) {
+  const exact = result.matchedSkills.filter((item) => item.matchStatus === "exact_match").length;
+  const semantic = result.matchedSkills.filter((item) => item.matchStatus === "semantic_match").length;
+  const partial = result.matchedSkills.filter((item) => item.matchStatus === "partial_match").length;
+  const total = result.matchedSkills.length + result.missingRequiredSkills.length + result.missingPreferredSkills.length;
+  const matchedPercent = total ? Math.round((result.matchedSkills.length / total) * 100) : 0;
   const summary = getAnalysisSummary({
     matchedCount: result.matchedSkills.length,
     missingRequiredCount: result.missingRequiredSkills.length,
@@ -22,64 +14,35 @@ export function AnalysisSummaryCard({ result }: AnalysisSummaryCardProps) {
     recommendationsCount: result.recommendations.length,
   });
 
-  const stats = [
-    {
-      label: "Matched",
-      value: result.matchedSkills.length,
-      icon: ClipboardCheck,
-      description: "Visible CV evidence",
-    },
-    {
-      label: "Required gaps",
-      value: result.missingRequiredSkills.length,
-      icon: Target,
-      description: "Highest priority fixes",
-    },
-    {
-      label: "Preferred gaps",
-      value: result.missingPreferredSkills.length,
-      icon: FileText,
-      description: "Optional improvements",
-    },
-    {
-      label: "Actions",
-      value: result.recommendations.length,
-      icon: Lightbulb,
-      description: "CV improvements",
-    },
-  ];
-
   return (
-    <Card className="border-[rgba(31,77,71,0.12)] bg-white shadow-sm shadow-[#183f3a]/5">
-      <CardHeader className="gap-2 p-4">
-        <CardTitle className="text-xl font-semibold tracking-tight text-[#183f3a]">
-          Analysis summary
-        </CardTitle>
-        <CardDescription className="text-sm leading-6 text-[#66736f]">
-          {summary}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-3 p-4 pt-0 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
+    <section className="rounded-xl bg-white p-4 sm:p-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm font-medium text-[#66736f]">Requirements overview</p>
+          <h2 className="mt-1 text-xl font-semibold text-[#183f3a]">What the analysis found</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#66736f]">{summary}</p>
+        </div>
+        <p className="text-3xl font-semibold tabular-nums text-[#183f3a]">{matchedPercent}% <span className="text-sm font-normal text-[#66736f]">visible</span></p>
+      </div>
 
-          return (
-            <div
-              key={stat.label}
-              className="rounded-2xl border border-[rgba(31,77,71,0.12)] bg-[#f8f7f3] p-4"
-            >
-              <Icon className="mb-4 size-5 text-[#1f4d47]" aria-hidden="true" />
-              <p className="text-3xl font-semibold tracking-tight text-[#183f3a]">
-                {stat.value}
-              </p>
-              <h2 className="mt-2 text-sm font-medium text-[#183f3a]">{stat.label}</h2>
-              <p className="mt-1 text-sm leading-6 text-[#66736f]">
-                {stat.description}
-              </p>
-            </div>
-          );
-        })}
-      </CardContent>
-    </Card>
+      <div className="mt-5 flex h-2.5 overflow-hidden rounded-full bg-[#edf1ef]" aria-label={`${result.matchedSkills.length} matched, ${result.missingRequiredSkills.length} missing required, ${result.missingPreferredSkills.length} missing preferred`}>
+        {total > 0 ? <>
+          <div className="bg-[#276948]" style={{ width: `${(result.matchedSkills.length / total) * 100}%` }} />
+          <div className="bg-[#b66c55]" style={{ width: `${(result.missingRequiredSkills.length / total) * 100}%` }} />
+          <div className="bg-[#c99d58]" style={{ width: `${(result.missingPreferredSkills.length / total) * 100}%` }} />
+        </> : null}
+      </div>
+
+      <div className="mt-5 grid gap-px overflow-hidden rounded-lg bg-[#dbe5e2] sm:grid-cols-4">
+        <SummaryMetric label="Matched" value={result.matchedSkills.length} note={`${exact} exact · ${semantic} semantic · ${partial} partial`} />
+        <SummaryMetric label="Required gaps" value={result.missingRequiredSkills.length} note="Highest-priority gaps" />
+        <SummaryMetric label="Preferred gaps" value={result.missingPreferredSkills.length} note="Lower score impact" />
+        <SummaryMetric label="Next actions" value={result.recommendations.length} note="Stored recommendations" />
+      </div>
+    </section>
   );
+}
+
+function SummaryMetric({ label, value, note }: { label: string; value: number; note: string }) {
+  return <div className="bg-[#f8f7f3] p-4"><p className="text-2xl font-semibold tabular-nums text-[#183f3a]">{value}</p><p className="mt-1 text-sm font-medium text-[#365a54]">{label}</p><p className="mt-1 text-xs text-[#66736f]">{note}</p></div>;
 }

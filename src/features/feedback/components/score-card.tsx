@@ -1,31 +1,14 @@
-import { CalendarClock, FileCheck2, ShieldCheck } from "lucide-react";
+import { CalendarClock, ShieldCheck } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AnimatedScoreRing } from "@/features/feedback/components/animated-score-ring";
 import {
   formatDateTime,
-  formatResultLabel,
-  formatScore,
   formatStatus,
   getScoreExplanation,
 } from "@/features/feedback/feedback-copy";
-import type {
-  FeedbackResultDetails,
-  FeedbackScanSummary,
-} from "@/features/feedback/types";
+import type { FeedbackResultDetails, FeedbackScanSummary } from "@/features/feedback/types";
 
-type ScoreCardProps = {
-  scan: FeedbackScanSummary;
-  result: FeedbackResultDetails | null;
-};
-
-export function ScoreCard({ scan, result }: ScoreCardProps) {
+export function ScoreCard({ scan, result }: { scan: FeedbackScanSummary; result: FeedbackResultDetails | null }) {
   const finalScore = scan.finalScore ?? result?.finalScore ?? null;
   const finalLabel = scan.finalLabel ?? result?.finalLabel ?? null;
   const explanation = getScoreExplanation({
@@ -36,68 +19,30 @@ export function ScoreCard({ scan, result }: ScoreCardProps) {
   });
 
   return (
-    <Card className="border-[#2a625b] bg-[#183f3a] text-white shadow-sm shadow-[#183f3a]/15">
-      <CardHeader className="gap-4 p-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex size-11 items-center justify-center rounded-2xl bg-white text-[#183f3a]">
-            <FileCheck2 className="size-5" aria-hidden="true" />
-          </div>
-          <Badge className="w-fit bg-white/12 text-white capitalize">
-            {formatStatus(scan.currentStatus)}
-          </Badge>
+    <section className="overflow-hidden rounded-xl bg-[#183f3a] p-5 text-white">
+      <div className="flex flex-col items-center gap-5 sm:flex-row xl:flex-col 2xl:flex-row">
+        <AnimatedScoreRing score={finalScore} label={finalLabel} />
+        <div className="min-w-0 flex-1 text-center sm:text-left xl:text-center 2xl:text-left">
+          <p className="text-sm font-medium text-[#b9d4ce]">{formatStatus(scan.currentStatus)}</p>
+          <h2 className="mt-2 text-xl font-semibold">Your job-specific match</h2>
+          <p className="mt-2 text-sm leading-6 text-white/70">{explanation}</p>
         </div>
-        <div className="space-y-2">
-          <CardTitle className="text-2xl font-semibold tracking-tight">
-            {formatResultLabel(finalLabel)}
-          </CardTitle>
-          <CardDescription className="text-sm leading-6 text-white/68">
-            {explanation}
-          </CardDescription>
-        </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="grid gap-3 p-4 pt-0">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
-          <p className="text-sm text-white/58">
-            Final score
-          </p>
-          <p className="mt-2 text-5xl font-semibold tracking-tight">
-            {formatScore(finalScore)}
-          </p>
-        </div>
-
-        <div className="grid gap-3">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
-            <div className="flex gap-3">
-              <CalendarClock
-                className="mt-0.5 size-5 shrink-0 text-[#dcebea]"
-                aria-hidden="true"
-              />
-              <div>
-                <p className="text-sm font-medium">Completed</p>
-                <p className="mt-1 text-sm leading-6 text-white/62">
-                  {formatDateTime(scan.completedAt)}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-4">
-            <div className="flex gap-3">
-              <ShieldCheck
-                className="mt-0.5 size-5 shrink-0 text-[#dcebea]"
-                aria-hidden="true"
-              />
-              <div>
-                <p className="text-sm font-medium">Backend controlled</p>
-                <p className="mt-1 text-sm leading-6 text-white/62">
-                  AI supplies evidence. The app validates JSON and calculates
-                  the score in code.
-                </p>
-              </div>
-            </div>
+      <div className="mt-5 grid gap-px overflow-hidden rounded-lg bg-white/10 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+        <div className="bg-white/[0.06] p-3.5">
+          <div className="flex gap-2.5">
+            <CalendarClock className="mt-0.5 size-4 shrink-0 text-[#b9d4ce]" aria-hidden="true" />
+            <div><p className="text-xs text-white/50">Completed</p><p className="mt-1 text-sm text-white/78">{formatDateTime(scan.completedAt)}</p></div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+        <div className="bg-white/[0.06] p-3.5">
+          <div className="flex gap-2.5">
+            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-[#b9d4ce]" aria-hidden="true" />
+            <div><p className="text-xs text-white/50">Score control</p><p className="mt-1 text-sm text-white/78">Calculated by backend code</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

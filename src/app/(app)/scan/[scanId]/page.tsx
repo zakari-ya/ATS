@@ -137,7 +137,7 @@ export default async function ScanResultPage({ params }: ResultPageProps) {
   const pageState = buildPageState(scan, result);
 
   return (
-    <div className="flex min-h-full flex-col gap-4 lg:h-full lg:min-h-0">
+    <div className="app-section-enter flex min-h-full flex-col gap-4 lg:h-full lg:min-h-0">
       <ResultHeader scan={scan} />
 
       {pageState.kind === "ready" ? (
@@ -191,6 +191,7 @@ export default async function ScanResultPage({ params }: ResultPageProps) {
             title={pageState.title}
             message={pageState.message}
             statusLabel={pageState.statusLabel}
+            currentStatus={pageState.scan.currentStatus}
           />
         )
       )}
