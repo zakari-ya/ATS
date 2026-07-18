@@ -17,7 +17,7 @@ export function ResultEmptyState({
   currentStatus: ScanStatus;
 }) {
   return (
-    <section className="grid gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(20rem,1.2fr)]">
+    <section className="grid items-start gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(20rem,1.2fr)]">
       <div className="flex flex-col justify-between rounded-xl bg-[#183f3a] p-6 text-white">
         <div>
           <p className="text-sm font-medium text-[#b9d4ce]">{statusLabel}</p>

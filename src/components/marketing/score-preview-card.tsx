@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { animate, motion, useInView, useReducedMotion } from "motion/react";
-import { Check, CircleAlert, Minus } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 
 const matched = ["React", "TypeScript", "REST APIs"];
 
@@ -11,62 +11,96 @@ export function ScorePreviewCard() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.18 }}
-      transition={{ duration: 0.58, ease: [0.16, 1, 0.3, 1] }}
-      className="relative overflow-hidden rounded-2xl bg-[#e6f0ee] p-4 sm:p-7 lg:p-10"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.62, ease: [0.16, 1, 0.3, 1] }}
+      className="relative mx-auto w-full max-w-[54rem] sm:min-h-[43rem] lg:min-h-[78svh] lg:max-h-[50rem]"
+      aria-label="Illustrative CVMatch result showing a score of 78"
     >
-      <div className="absolute -right-16 -top-24 size-72 rounded-full bg-white/40 blur-3xl" aria-hidden="true" />
-      <div className="relative flex items-center justify-between gap-4">
-        <p className="text-xs font-medium text-[#58716b]">Example result · illustrative data</p>
-        <span className="rounded-full bg-white/72 px-3 py-1 text-xs text-[#47655f]">Backend scored</span>
+      <div className="absolute inset-x-[6%] top-1/2 hidden h-px bg-[#dfe8e5] sm:block" aria-hidden="true" />
+      <div className="absolute bottom-[8%] top-[8%] left-1/2 hidden w-px bg-[#e8eeec] sm:block" aria-hidden="true" />
+
+      <div className="relative z-10 space-y-3 pt-4 sm:contents">
+      <div className="relative py-8 text-center sm:absolute sm:left-1/2 sm:top-[46%] sm:py-0 sm:-translate-x-1/2 sm:-translate-y-1/2">
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#66736f]">
+          Backend-calculated
+        </p>
+        <div className="mt-2 flex items-end justify-center gap-3">
+          <AnimatedExampleScore reducedMotion={Boolean(shouldReduceMotion)} />
+          <span className="pb-4 text-sm font-medium text-[#46665f]">Good match</span>
+        </div>
+        <div className="mx-auto mt-3 h-1.5 w-44 overflow-hidden rounded-full bg-[#e1ebe8]">
+          <motion.div
+            initial={{ width: shouldReduceMotion ? "78%" : 0 }}
+            whileInView={{ width: "78%" }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="h-full rounded-full bg-[#183f3a]"
+          />
+        </div>
       </div>
 
-      <div className="relative mt-6 grid gap-4 lg:grid-cols-[0.72fr_1.28fr]">
-        <div className="flex min-h-72 flex-col justify-between rounded-2xl bg-[#183f3a] p-6 text-white sm:p-8">
-          <div>
-            <p className="text-sm text-white/58">Final score</p>
-            <div className="mt-3 flex items-end gap-3">
-              <AnimatedExampleScore reducedMotion={Boolean(shouldReduceMotion)} />
-              <span className="pb-2 text-sm text-[#b9d4ce]">Good match</span>
-            </div>
-          </div>
-          <div>
-            <div className="h-2 overflow-hidden rounded-full bg-white/12">
-              <motion.div initial={{ width: shouldReduceMotion ? "78%" : 0 }} whileInView={{ width: "78%" }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.12, ease: [0.16, 1, 0.3, 1] }} className="h-full rounded-full bg-[#a9c7c1]" />
-            </div>
-            <p className="mt-4 text-sm leading-6 text-white/68">Score limited by one missing required skill.</p>
-          </div>
+      <motion.div
+        initial={{ opacity: 0, x: -18, y: 8 }}
+        whileInView={{ opacity: 1, x: 0, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.12 }}
+        className="relative w-full rounded-xl bg-white/94 p-4 shadow-[0_24px_50px_-34px_rgba(24,63,58,0.45)] sm:absolute sm:left-[8%] sm:top-[10%] sm:w-auto sm:max-w-[17rem]"
+      >
+        <p className="text-xs font-medium text-[#66736f]">Matched requirements</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {matched.map((item) => (
+            <span key={item} className="rounded-full bg-[#e5f1ed] px-3 py-1.5 text-xs font-medium text-[#276948]">
+              {item}
+            </span>
+          ))}
         </div>
+      </motion.div>
 
-        <div className="relative min-h-72 rounded-2xl bg-white/80 p-5 sm:p-7">
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div>
-              <p className="text-xs font-medium text-[#58716b]">Matched requirements</p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {matched.map((item, index) => (
-                  <motion.span key={item} initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.35, delay: 0.18 + index * 0.07 }} className="inline-flex items-center gap-1.5 rounded-full bg-[#e3f0e7] px-3 py-1.5 text-xs text-[#276948]"><Check className="size-3" aria-hidden="true" />{item}</motion.span>
-                ))}
-              </div>
-              <div className="mt-5 rounded-xl bg-[#f3f5f1] p-4">
-                <p className="text-xs font-medium text-[#365a54]">Evidence excerpt</p>
-                <p className="mt-2 text-sm leading-6 text-[#66736f]">“Built typed frontend features and connected REST APIs.”</p>
-              </div>
-            </div>
-            <div>
-              <p className="text-xs font-medium text-[#58716b]">Missing requirements</p>
-              <motion.div initial={{ opacity: 0, x: 10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: 0.4 }} className="mt-4 space-y-2">
-                <RequirementRow name="PostgreSQL" label="Required" icon="alert" />
-                <RequirementRow name="Testing" label="Preferred" icon="neutral" />
-              </motion.div>
-              <motion.div initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: 0.52 }} className="mt-5 rounded-xl bg-[#dcebea] p-4">
-                <p className="text-xs font-medium text-[#365a54]">Improvement priority</p>
-                <p className="mt-2 text-sm leading-6 text-[#365a54]">Make backend project evidence clearer.</p>
-              </motion.div>
-            </div>
-          </div>
-        </div>
+      <motion.div
+        initial={{ opacity: 0, x: 18, y: 8 }}
+        whileInView={{ opacity: 1, x: 0, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.22 }}
+        className="relative w-full rounded-xl bg-[#f5f1e9] p-4 shadow-[0_24px_50px_-34px_rgba(24,63,58,0.38)] sm:absolute sm:right-[6%] sm:top-[15%] sm:w-[15rem]"
+      >
+        <p className="text-xs font-medium text-[#77684f]">Missing required</p>
+        <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-[#654936]">
+          <CircleAlert className="size-4" aria-hidden="true" />
+          PostgreSQL
+        </p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, x: -14, y: -8 }}
+        whileInView={{ opacity: 1, x: 0, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.34 }}
+        className="relative w-full rounded-xl bg-[#183f3a] p-5 text-white shadow-[0_26px_54px_-30px_rgba(24,63,58,0.55)] sm:absolute sm:bottom-[10%] sm:left-[10%] sm:w-auto sm:max-w-[19rem]"
+      >
+        <p className="text-xs font-medium text-white/58">Score cap</p>
+        <p className="mt-2 text-sm leading-6 text-white/78">
+          Limited by one missing required skill.
+        </p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, x: 14, y: -8 }}
+        whileInView={{ opacity: 1, x: 0, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.44 }}
+        className="relative w-full rounded-xl bg-[#dcebea] p-5 shadow-[0_24px_50px_-34px_rgba(24,63,58,0.42)] sm:absolute sm:right-[8%] sm:bottom-[10%] sm:w-auto sm:max-w-[18rem]"
+      >
+        <p className="text-xs font-medium text-[#526c66]">Practical next step</p>
+        <p className="mt-2 text-sm leading-6 text-[#365a54]">
+          Make backend project evidence clearer.
+        </p>
+      </motion.div>
+
+      <p className="relative pt-3 text-center text-[0.68rem] text-[#86938f] sm:absolute sm:bottom-0 sm:left-1/2 sm:pt-0 sm:-translate-x-1/2">
+        Illustrative data, not a real user result
+      </p>
       </div>
     </motion.div>
   );
@@ -81,14 +115,18 @@ function AnimatedExampleScore({ reducedMotion }: { reducedMotion: boolean }) {
     if (!isInView || reducedMotion) {
       return;
     }
-    const controls = animate(0, 78, { duration: 0.65, ease: [0.16, 1, 0.3, 1], onUpdate: (latest) => setValue(Math.round(latest)) });
+
+    const controls = animate(0, 78, {
+      duration: 0.72,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (latest) => setValue(Math.round(latest)),
+    });
     return () => controls.stop();
   }, [isInView, reducedMotion]);
 
-  return <span ref={ref} className="text-6xl font-semibold tabular-nums">{reducedMotion ? 78 : value}</span>;
-}
-
-function RequirementRow({ name, label, icon }: { name: string; label: string; icon: "alert" | "neutral" }) {
-  const Icon = icon === "alert" ? CircleAlert : Minus;
-  return <div className="flex items-center justify-between gap-3 rounded-xl bg-[#f8f7f3] px-3 py-3 text-sm"><span className="flex items-center gap-2 text-[#183f3a]"><Icon className={icon === "alert" ? "size-4 text-[#9a5b43]" : "size-4 text-[#8a6f42]"} aria-hidden="true" />{name}</span><span className="text-xs text-[#66736f]">{label}</span></div>;
+  return (
+    <span ref={ref} className="font-display text-[7rem] leading-none text-[#183f3a] sm:text-[10rem]">
+      {reducedMotion ? 78 : value}
+    </span>
+  );
 }

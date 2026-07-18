@@ -24,14 +24,14 @@ export function ScoreTrendChart({ data }: ScoreTrendChartProps) {
   const shouldReduceMotion = useReducedMotion();
   if (data.length < 2) {
     return (
-      <section className="flex min-h-72 flex-col justify-between rounded-xl bg-white p-5">
+      <section className="rounded-xl bg-white p-5">
         <div>
           <p className="text-sm font-medium text-[#66736f]">Score trend</p>
           <h2 className="mt-1 text-xl font-semibold text-[#183f3a]">
             Your scores over time
           </h2>
         </div>
-        <div className="py-7">
+        <div className="pt-7">
           <p className="max-w-md text-sm leading-6 text-[#66736f]">
             Complete at least two scans to see how your match scores change over
             time.

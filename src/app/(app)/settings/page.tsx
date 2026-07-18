@@ -84,7 +84,7 @@ export default async function SettingsPage() {
     profile?.full_name?.trim() || googleDisplayName || getFallbackName(user.email);
 
   return (
-    <div className="grid min-h-full gap-4 xl:grid-cols-12">
+    <div className="grid items-start gap-4 xl:grid-cols-12">
       <section className="space-y-4 xl:col-span-8">
         <Card className="border-[rgba(31,77,71,0.12)] bg-white shadow-sm shadow-[#183f3a]/5">
           <CardHeader className="p-4">

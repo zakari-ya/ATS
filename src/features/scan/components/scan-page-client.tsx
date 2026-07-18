@@ -216,8 +216,8 @@ export function ScanPageClient({ todayUsage }: ScanPageClientProps) {
         isWorking={isWorking}
       />
 
-      <section className="grid gap-4 lg:min-h-0 lg:flex-1 xl:grid-cols-12">
-        <div className="grid min-h-0 gap-4 xl:col-span-8 xl:grid-rows-[auto_minmax(0,1fr)]">
+      <section className="grid items-start gap-4 lg:min-h-0 lg:flex-1 xl:grid-cols-12">
+        <div className="grid min-h-0 content-start gap-4 xl:col-span-8">
           <CvUploadCard
             selectedFile={formState.cvFile}
             onSelectedFileChange={(cvFile) => {

@@ -8,7 +8,7 @@ import type { DashboardLatestInsight } from "@/types/dashboard";
 export function LatestScanInsight({ insight }: { insight: DashboardLatestInsight | null }) {
   if (!insight) {
     return (
-      <section className="flex min-h-56 flex-col justify-between rounded-xl bg-[#183f3a] p-5 text-white">
+      <section className="rounded-xl bg-[#183f3a] p-5 text-white">
         <div>
           <p className="text-sm font-medium text-white/60">Latest result</p>
           <h2 className="mt-2 text-xl font-semibold">No completed scan yet</h2>

@@ -25,23 +25,16 @@ export default async function DashboardPage() {
       />
       <DashboardStats stats={data.stats} />
 
-      <section className="grid gap-4 xl:grid-cols-12">
-        <div className="xl:col-span-8">
+      <section className="grid items-start gap-4 xl:grid-cols-12">
+        <div className="space-y-4 xl:col-span-8">
           <ScoreTrendChart data={data.scoreTrend} />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:col-span-4 xl:grid-cols-1">
-          <MatchDistribution data={data.labelDistribution} />
-          <MissingSkillsRanking data={data.missingSkills} />
-        </div>
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-12">
-        <div className="xl:col-span-7">
           <LatestScanInsight insight={data.latestInsight} />
         </div>
-        <div className="xl:col-span-5">
+        <aside className="grid content-start gap-4 xl:col-span-4">
+          <MatchDistribution data={data.labelDistribution} />
+          <MissingSkillsRanking data={data.missingSkills} />
           <UsageQuotaCard usage={data.usage} variant="compact" />
-        </div>
+        </aside>
       </section>
 
       {/* <RecentScansCard scans={data.recentScans} />

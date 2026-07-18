@@ -51,7 +51,7 @@ export function SectionShell({
       id={id}
       className={cn("px-[15px] sm:px-5 lg:px-6 xl:px-7", className)}
     >
-      <div className={cn("mx-auto w-full max-w-[1440px]", innerClassName)}>
+      <div className={cn("mx-auto w-full max-w-[1680px]", innerClassName)}>
         {children}
       </div>
     </Component>
