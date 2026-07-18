@@ -3,6 +3,8 @@ export type UsageCounterName =
   | "files_uploaded"
   | "ai_requests_used";
 
+export type UsageActionKey = "ai_analysis" | "resume_generation" | "resume_profile_initialization";
+
 export type DailyUsage = {
   userId: string;
   periodKey: string;

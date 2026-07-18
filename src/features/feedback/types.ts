@@ -3,6 +3,7 @@ import type { AppliedScoreCapCode } from "@/types/scoring";
 
 export type FeedbackSkillItem = {
   requirement: string;
+  category: string | null;
   priority: "critical" | "required" | "preferred" | null;
   matchStatus:
     | "exact_match"
@@ -174,6 +175,7 @@ function parseSkillItem(value: unknown): FeedbackSkillItem | null {
 
   return {
     requirement,
+    category: parseString(value.category),
     priority: parsePriority(value.priority),
     matchStatus: parseMatchStatus(value.match_status ?? value.matchStatus),
     confidence: parseNumberValue(value.confidence),

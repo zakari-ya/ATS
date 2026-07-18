@@ -1,12 +1,12 @@
 import "server-only";
 import { getAiProviderEnv } from "@/lib/env";
 
-type JsonSchema = {
+export type AiJsonSchema = {
   type: string | string[];
-  properties?: Record<string, JsonSchema>;
-  items?: JsonSchema;
+  properties?: Record<string, AiJsonSchema>;
+  items?: AiJsonSchema;
   required?: string[];
-  enum?: string[];
+  enum?: Array<string | number | boolean>;
   additionalProperties?: boolean;
   maxItems?: number;
   maxLength?: number;
@@ -16,6 +16,14 @@ type JsonSchema = {
 
 type AiCompletionInput = {
   prompt: string;
+  /** Use JSON mode without a provider schema for one-off, independently validated flows. */
+  forceJsonObject?: boolean;
+  /** Caller-specific deadline. Keep below the hosting function duration. */
+  timeoutMs?: number;
+  responseSchema?: {
+    name: string;
+    schema: AiJsonSchema;
+  };
 };
 
 type AiCompletionResult = {
@@ -32,7 +40,7 @@ type AiResponseFormat =
       json_schema: {
         name: string;
         strict: boolean;
-        schema: JsonSchema;
+        schema: AiJsonSchema;
       };
     };
 
@@ -48,12 +56,21 @@ type ChatCompletionResponse = {
   choices?: ChatCompletionChoice[];
 };
 
+type GeminiGenerateContentResponse = {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{ text?: unknown }>;
+    };
+  }>;
+};
+
 export type AiProviderErrorCode =
   | "AI_PROVIDER_NOT_CONFIGURED"
   | "RATE_LIMITED"
   | "AI_PROVIDER_AUTH_FAILED"
   | "AI_MODEL_NOT_FOUND"
   | "AI_REQUEST_FORMAT_INVALID"
+  | "AI_REQUEST_TIMEOUT"
   | "AI_REQUEST_FAILED";
 
 export class AiProviderError extends Error {
@@ -80,19 +97,42 @@ export class AiProviderError extends Error {
   }
 }
 
+const AI_PROVIDER_ERROR_CODES = new Set<AiProviderErrorCode>([
+  "AI_PROVIDER_NOT_CONFIGURED",
+  "RATE_LIMITED",
+  "AI_PROVIDER_AUTH_FAILED",
+  "AI_MODEL_NOT_FOUND",
+  "AI_REQUEST_FORMAT_INVALID",
+  "AI_REQUEST_TIMEOUT",
+  "AI_REQUEST_FAILED",
+]);
+
+export function isAiProviderError(error: unknown): error is AiProviderError {
+  if (error instanceof AiProviderError) return true;
+  if (!error || typeof error !== "object") return false;
+  const candidate = error as Record<string, unknown>;
+  return (
+    candidate.name === "AiProviderError" &&
+    typeof candidate.errorCode === "string" &&
+    AI_PROVIDER_ERROR_CODES.has(candidate.errorCode as AiProviderErrorCode) &&
+    typeof candidate.retryable === "boolean"
+  );
+}
+
 const DEFAULT_PROVIDER_BASE_URL = "https://openrouter.ai/api/v1";
 const CHAT_COMPLETIONS_PATH = "/chat/completions";
 const REQUEST_TIMEOUT_MS = 60_000;
+const MAX_REQUEST_TIMEOUT_MS = 240_000;
 
 const shortStringSchema = {
   type: "string",
   maxLength: 160,
-} as const satisfies JsonSchema;
+} as const satisfies AiJsonSchema;
 
 const evidenceStringSchema = {
   type: "string",
   maxLength: 280,
-} as const satisfies JsonSchema;
+} as const satisfies AiJsonSchema;
 
 const CV_MATCH_RESPONSE_JSON_SCHEMA = {
   type: "object",
@@ -303,10 +343,13 @@ const CV_MATCH_RESPONSE_JSON_SCHEMA = {
       },
     },
   },
-} as const satisfies JsonSchema;
+} as const satisfies AiJsonSchema;
 
 export async function requestAiJsonCompletion({
   prompt,
+  forceJsonObject = false,
+  timeoutMs = REQUEST_TIMEOUT_MS,
+  responseSchema,
 }: AiCompletionInput): Promise<AiCompletionResult> {
   let runtimeEnv: ReturnType<typeof getAiProviderEnv>;
 
@@ -322,9 +365,45 @@ export async function requestAiJsonCompletion({
   const { apiKey, model } = runtimeEnv;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const requestTimeout = normalizeRequestTimeout(timeoutMs);
+  const timeout = setTimeout(() => controller.abort(), requestTimeout);
 
   try {
+    if (
+      responseSchema &&
+      !forceJsonObject &&
+      isGeminiBaseUrl(runtimeEnv.baseUrl)
+    ) {
+      try {
+        return await requestGeminiCompletion({
+          apiKey,
+          model,
+          baseUrl: runtimeEnv.baseUrl!,
+          prompt,
+          responseSchema,
+          signal: controller.signal,
+        });
+      } catch (error) {
+        if (
+          !isAiProviderError(error) ||
+          error.errorCode !== "AI_REQUEST_FORMAT_INVALID"
+        ) {
+          throw error;
+        }
+
+        // Gemini can reject otherwise valid JSON Schema constraints for a
+        // particular model. Retry once in JSON mode; caller-side Zod parsing
+        // remains the authoritative validation boundary.
+        return await requestGeminiCompletion({
+          apiKey,
+          model,
+          baseUrl: runtimeEnv.baseUrl!,
+          prompt,
+          signal: controller.signal,
+        });
+      }
+    }
+
     const response = await fetch(buildChatCompletionsUrl(), {
       method: "POST",
       headers: {
@@ -336,7 +415,7 @@ export async function requestAiJsonCompletion({
         messages: [{ role: "user", content: prompt }],
         temperature: 0.1,
         stream: false,
-        response_format: buildResponseFormat(),
+        response_format: buildResponseFormat(responseSchema, forceJsonObject),
       }),
       signal: controller.signal,
     });
@@ -362,6 +441,14 @@ export async function requestAiJsonCompletion({
       throw error;
     }
 
+    if (isAbortError(error)) {
+      throw new AiProviderError({
+        errorCode: "AI_REQUEST_TIMEOUT",
+        message: "The analysis request took too long.",
+        retryable: true,
+      });
+    }
+
     throw new AiProviderError({
       errorCode: "AI_REQUEST_FAILED",
       message: "The analysis request failed.",
@@ -372,7 +459,74 @@ export async function requestAiJsonCompletion({
   }
 }
 
+async function requestGeminiCompletion({
+  apiKey,
+  model,
+  baseUrl,
+  prompt,
+  responseSchema,
+  signal,
+}: {
+  apiKey: string;
+  model: string;
+  baseUrl: string;
+  prompt: string;
+  responseSchema?: NonNullable<AiCompletionInput["responseSchema"]>;
+  signal: AbortSignal;
+}): Promise<AiCompletionResult> {
+  const nativeBaseUrl = baseUrl
+    .replace(/\/+$/, "")
+    .replace(/\/openai$/, "");
+  const response = await fetch(
+    `${nativeBaseUrl}/models/${encodeURIComponent(model)}:generateContent`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
+      },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.1,
+          responseMimeType: "application/json",
+          ...(responseSchema
+            ? { responseJsonSchema: responseSchema.schema }
+            : {}),
+        },
+      }),
+      signal,
+    }
+  );
+
+  if (!response.ok) throw buildProviderError(response.status);
+
+  const completion = (await response.json()) as GeminiGenerateContentResponse;
+  const content = completion.candidates?.[0]?.content?.parts
+    ?.map((part) => (typeof part.text === "string" ? part.text : ""))
+    .join("");
+
+  if (!content) {
+    throw new AiProviderError({
+      errorCode: "AI_REQUEST_FAILED",
+      message: "The analysis response was empty.",
+      retryable: true,
+    });
+  }
+
+  return { content, model };
+}
+
 function buildProviderError(status: number): AiProviderError {
+  if (status === 408 || status === 504) {
+    return new AiProviderError({
+      errorCode: "AI_REQUEST_TIMEOUT",
+      message: "The analysis request took too long.",
+      retryable: true,
+      providerStatus: status,
+    });
+  }
+
   if (status === 400) {
     return new AiProviderError({
       errorCode: "AI_REQUEST_FORMAT_INVALID",
@@ -417,7 +571,21 @@ function buildProviderError(status: number): AiProviderError {
   });
 }
 
-function skillRequirementSchema(): JsonSchema {
+function normalizeRequestTimeout(timeoutMs: number): number {
+  if (!Number.isFinite(timeoutMs) || timeoutMs < 1_000) {
+    return REQUEST_TIMEOUT_MS;
+  }
+  return Math.min(Math.floor(timeoutMs), MAX_REQUEST_TIMEOUT_MS);
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    (error.name === "AbortError" || error.name === "TimeoutError")
+  );
+}
+
+function skillRequirementSchema(): AiJsonSchema {
   return {
     type: "object",
     additionalProperties: false,
@@ -434,7 +602,7 @@ function skillRequirementSchema(): JsonSchema {
   };
 }
 
-function feedbackStringArraySchema(maxItems = 12): JsonSchema {
+function feedbackStringArraySchema(maxItems = 12): AiJsonSchema {
   return {
     type: "array",
     maxItems,
@@ -447,26 +615,41 @@ function feedbackStringArraySchema(maxItems = 12): JsonSchema {
 
 function buildChatCompletionsUrl(): string {
   const { baseUrl } = getAiProviderEnv();
+  const normalizedBaseUrl = (baseUrl ?? DEFAULT_PROVIDER_BASE_URL).replace(
+    /\/+$/,
+    ""
+  );
 
-  return `${baseUrl ?? DEFAULT_PROVIDER_BASE_URL}${CHAT_COMPLETIONS_PATH}`;
+  return `${normalizedBaseUrl}${CHAT_COMPLETIONS_PATH}`;
 }
 
-function buildResponseFormat(): AiResponseFormat {
+function isGeminiBaseUrl(baseUrl: string | null): boolean {
+  return Boolean(baseUrl?.includes("generativelanguage.googleapis.com"));
+}
+
+function buildResponseFormat(
+  responseSchema?: AiCompletionInput["responseSchema"],
+  forceJsonObject = false
+): AiResponseFormat {
   const { baseUrl } = getAiProviderEnv();
   const normalizedBaseUrl = baseUrl ?? DEFAULT_PROVIDER_BASE_URL;
 
-  if (normalizedBaseUrl.includes("generativelanguage.googleapis.com")) {
-    // Gemini's OpenAI-compatible layer can reject large JSON schemas. Zod
-    // validation still enforces the full contract before scoring or saving.
+  if (
+    forceJsonObject ||
+    (!responseSchema &&
+      normalizedBaseUrl.includes("generativelanguage.googleapis.com"))
+  ) {
+    // Keep legacy Gemini analysis requests in JSON mode. Callers with an
+    // explicit schema are routed through Gemini's native structured endpoint.
     return { type: "json_object" };
   }
 
   return {
     type: "json_schema",
     json_schema: {
-      name: "cv_match_analysis",
+      name: responseSchema?.name ?? "cv_match_analysis",
       strict: true,
-      schema: CV_MATCH_RESPONSE_JSON_SCHEMA,
+      schema: responseSchema?.schema ?? CV_MATCH_RESPONSE_JSON_SCHEMA,
     },
   };
 }

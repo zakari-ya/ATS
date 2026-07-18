@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, History, Plus, ShieldCheck } from "lucide-react";
+import { ArrowLeft, FilePenLine, History, Plus, ShieldCheck } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -144,6 +144,7 @@ export default async function ScanResultPage({ params }: ResultPageProps) {
         <div className="grid gap-4 lg:min-h-0 lg:flex-1 xl:grid-cols-12">
           <aside className="grid content-start gap-4 xl:col-span-4">
             <ScoreCard scan={pageState.scan} result={pageState.result} />
+            <TailoredResumeAction scanId={pageState.scan.id} />
             <ScoreBreakdown breakdown={pageState.result.scoreBreakdown} />
             <AppliedCapsCard appliedCaps={pageState.result.appliedCaps} />
             <Disclaimer />
@@ -196,6 +197,27 @@ export default async function ScanResultPage({ params }: ResultPageProps) {
         )
       )}
     </div>
+  );
+}
+
+function TailoredResumeAction({ scanId }: { scanId: string }) {
+  return (
+    <section className="rounded-2xl border border-[#cfe2de] bg-[#eef4f2] p-4">
+      <FilePenLine className="size-5 text-[#315c45]" aria-hidden="true" />
+      <h2 className="mt-3 text-base font-semibold text-[#183f3a]">
+        Create a tailored resume
+      </h2>
+      <p className="mt-1 text-sm leading-6 text-[#315c45]">
+        Build a job-specific resume using your existing CV, verified experience,
+        and this scan&apos;s analysis.
+      </p>
+      <Button asChild className="mt-4 h-10 w-full bg-[#183f3a] text-white hover:bg-[#1f4d47]">
+        <Link href={`/scan/${scanId}/resume`}>
+          Create tailored resume
+          <FilePenLine className="size-4" aria-hidden="true" />
+        </Link>
+      </Button>
+    </section>
   );
 }
 

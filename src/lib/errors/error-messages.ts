@@ -26,6 +26,7 @@ export const SAFE_ERROR_MESSAGES = {
     "The selected analysis model is not available. Check the configured model name.",
   AI_REQUEST_FORMAT_INVALID:
     "The analysis provider rejected the request format. Check the configured provider endpoint and model.",
+  AI_REQUEST_TIMEOUT: "The analysis took too long. Please try again.",
   AI_REQUEST_FAILED: "The analysis failed. Please try again.",
   AI_JSON_INVALID:
     "We could not validate the analysis safely. Please try again.",

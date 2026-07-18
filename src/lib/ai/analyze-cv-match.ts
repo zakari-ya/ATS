@@ -5,7 +5,7 @@ import {
   buildCvMatchRepairPrompt,
 } from "@/lib/ai/prompts";
 import {
-  AiProviderError,
+  isAiProviderError,
   requestAiJsonCompletion,
 } from "@/lib/ai/client";
 import { safeParseAiCvMatchResponse } from "@/lib/ai/safe-ai-output";
@@ -30,6 +30,7 @@ export type AnalyzeCvMatchResult =
         | "AI_PROVIDER_AUTH_FAILED"
         | "AI_MODEL_NOT_FOUND"
         | "AI_REQUEST_FORMAT_INVALID"
+        | "AI_REQUEST_TIMEOUT"
         | "AI_REQUEST_FAILED"
         | "AI_JSON_INVALID"
         | "AI_ANALYSIS_FAILED";
@@ -75,7 +76,7 @@ export async function analyzeCvMatchWithAi({
         });
       }
     } catch (error) {
-      if (error instanceof AiProviderError) {
+      if (isAiProviderError(error)) {
         const safeError: AnalyzeCvMatchResult = {
           ok: false,
           errorCode: error.errorCode,
@@ -90,6 +91,8 @@ export async function analyzeCvMatchWithAi({
                 ? error.message
               : error.errorCode === "AI_REQUEST_FORMAT_INVALID"
                 ? error.message
+              : error.errorCode === "AI_REQUEST_TIMEOUT"
+                ? "The analysis took too long. Please try again."
               : "The analysis failed. Please try again.",
         };
 

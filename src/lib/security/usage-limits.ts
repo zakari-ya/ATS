@@ -9,6 +9,7 @@ import { getUsageLimitMessage } from "@/lib/security/rate-limit-errors";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
   DailyUsage,
+  UsageActionKey,
   UsageCounterName,
   UsageIncrementResult,
   UsageLimitCheckResult,
@@ -189,6 +190,44 @@ export async function checkDailyAiLimit({
   }
 
   return { ok: true };
+}
+
+/**
+ * Named action boundary for provider-backed work. The current schema has one
+ * protected provider-request counter, so resume generation shares it rather
+ * than adding a parallel counter that could be bypassed.
+ */
+export async function checkUsageActionLimit({
+  userId,
+  action,
+}: {
+  userId: string;
+  action: UsageActionKey;
+}): Promise<UsageLimitCheckResult> {
+  switch (action) {
+    case "ai_analysis":
+    case "resume_generation":
+    case "resume_profile_initialization":
+      return checkDailyAiLimit({ userId });
+  }
+}
+
+export async function consumeUsageAction({
+  userId,
+  action,
+}: {
+  userId: string;
+  action: UsageActionKey;
+}): Promise<UsageIncrementResult> {
+  switch (action) {
+    case "ai_analysis":
+    case "resume_generation":
+    case "resume_profile_initialization":
+      return incrementDailyUsageCounter({
+        userId,
+        counterName: "ai_requests_used",
+      });
+  }
 }
 
 export async function incrementDailyUsageCounter({

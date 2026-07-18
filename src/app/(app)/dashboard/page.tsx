@@ -5,7 +5,6 @@ import { DashboardStats } from "@/features/dashboard/components/dashboard-stats"
 import { LatestScanInsight } from "@/features/dashboard/components/latest-scan-insight";
 import { MatchDistribution } from "@/features/dashboard/components/match-distribution";
 import { MissingSkillsRanking } from "@/features/dashboard/components/missing-skills-ranking";
-import { RecentScansCard } from "@/features/dashboard/components/recent-scans-card";
 import { ScoreTrendChart } from "@/features/dashboard/components/score-trend-chart";
 import { getDashboardDataForCurrentUser } from "@/features/dashboard/get-dashboard-data";
 // import { DevRlsTestCard } from "@/features/scan/components/dev-rls-test-card";
