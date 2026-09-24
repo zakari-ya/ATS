@@ -12,9 +12,9 @@ import { TrustStrip } from "@/components/marketing/trust-strip";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "ATS CV Checker | Job-Specific CV Match Analysis",
+  title: "CVMatch – ATS CV Checker & Job Match Analysis",
   description:
-    "Upload your CV, paste a job description, and get an ATS-style match score with missing skills, strong points, and practical improvement suggestions.",
+    "Upload your CV and paste a job description to get an ATS-style match score, missing skills, strengths, and practical improvement suggestions before you apply.",
 };
 
 export default async function HomePage() {
