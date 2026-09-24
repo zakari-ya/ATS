@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { getTodayUsageForCurrentUser } from "@/features/usage/get-usage";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function AppLayout({
   children,

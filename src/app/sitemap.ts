@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
 
+import { SITE_URL } from "@/lib/seo/site";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: "https://cvmatchdesc.vercel.app/",
+      url: `${SITE_URL}/`,
     },
   ];
 }

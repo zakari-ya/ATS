@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
+
+import { SITE_NAME, SITE_URL } from "@/lib/seo/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ATS CV Checker",
-  description: "Private ATS-style CV match analysis for job applications.",
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
+  title: {
+    default: `${SITE_NAME} – Free ATS CV Checker`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description:
+    "Check how your CV matches a job description with an ATS-style score, skill gaps, and practical suggestions.",
   icons: {
     icon: "/favicon.ico",
     apple: "/icon.png",
