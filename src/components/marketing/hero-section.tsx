@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
 import {
   Bell,
@@ -17,9 +17,18 @@ import {
   Settings,
   Sparkles,
   Upload,
+  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const VIDEO_URL =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260319_015952_e1deeb12-8fb7-4071-a42a-60779fc64ab6.mp4";
@@ -64,6 +73,23 @@ const recentRows = [
 ];
 
 export function HeroSection() {
+  const [isDemoOpen, setIsDemoOpen] = useState(false);
+  const demoVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = demoVideoRef.current;
+    if (!video) return;
+
+    if (isDemoOpen) {
+      void video.play().catch(() => {
+        // Playback controls remain available if the browser blocks autoplay.
+      });
+    } else {
+      video.pause();
+      video.currentTime = 0;
+    }
+  }, [isDemoOpen]);
+
   return (
     <section className="relative z-10 flex min-h-0 flex-1 flex-col items-center px-[15px] pb-0 text-[#183f3a] sm:px-5 lg:px-6 xl:px-7">
       <video
@@ -126,16 +152,53 @@ export function HeroSection() {
             >
               <Link href="/scan">Start free scan</Link>
             </Button>
-            <Button
-              asChild
-              variant="ghost"
-              size="icon-lg"
-              className="size-11 rounded-full border-0 bg-white/82 text-[#183f3a] shadow-[0_2px_12px_rgba(31,77,71,0.14)] backdrop-blur-xl hover:bg-white"
-            >
-              <Link href="#how-it-works" aria-label="See how it works">
-                <Play className="size-4 fill-current" aria-hidden="true" />
-              </Link>
-            </Button>
+            <Dialog open={isDemoOpen} onOpenChange={setIsDemoOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-lg"
+                  aria-label="See how it works"
+                  className="size-11 rounded-full border-0 bg-white/82 text-[#183f3a] shadow-[0_2px_12px_rgba(31,77,71,0.14)] backdrop-blur-xl hover:bg-white"
+                >
+                  <Play className="size-4 fill-current" aria-hidden="true" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent
+                showCloseButton={false}
+                overlayClassName="bg-[#102d29]/55 backdrop-blur-md supports-backdrop-filter:bg-[#102d29]/40"
+                className="w-auto max-w-none overflow-visible rounded-none border-0 bg-transparent p-0 text-white shadow-none ring-0 outline-none sm:max-w-none"
+                style={{ width: "min(96vw, 80rem, 145.78dvh)" }}
+              >
+                <DialogTitle className="sr-only">See how CVMatch works</DialogTitle>
+                <DialogDescription className="sr-only">
+                  A short walkthrough of uploading a CV, matching it to a job
+                  description, and reviewing the results.
+                </DialogDescription>
+                <DialogClose asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-lg"
+                    aria-label="Close video"
+                    className="absolute -top-12 right-0 z-10 size-10 rounded-full border-0 bg-black/45 text-white hover:bg-black/70 hover:text-white focus-visible:ring-white"
+                  >
+                    <X className="size-5" aria-hidden="true" />
+                  </Button>
+                </DialogClose>
+                <video
+                  ref={demoVideoRef}
+                  className="block max-h-[82dvh] w-full aspect-video rounded-xl bg-black object-contain shadow-2xl shadow-black/25"
+                  src="/cvmatch-demo.mp4"
+                  poster="/cvmatch-demo-poster.jpg"
+                  controls
+                  autoPlay
+                  playsInline
+                  preload="none"
+                  aria-label="CVMatch product demo"
+                />
+              </DialogContent>
+            </Dialog>
           </motion.div>
 
           <motion.p
